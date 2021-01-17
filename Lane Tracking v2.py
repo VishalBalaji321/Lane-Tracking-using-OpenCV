@@ -5,16 +5,31 @@ from matplotlib import pyplot
 
 
 class LaneTracking:
-    def __init__(self, path, mode='Video'):
+    def __init__(self, path, mode='Video', needGridPlot=False):
         if mode == 'Video':
-            pass
+            # Opening the video using the inbuilt OpenCV Function
+            cap = cv2.VideoCapture(path)
+            while cap.isOpened():
+                ret, self.image = cap.read()
+                if ret == True:
+                    self.process_frame()
+                    if self.waitkey(1):
+                        break
+            cap.release()
+            cv2.destroyAllWindows()
+
         elif mode == 'Image':
+            # Opening the image using the inbuilt OpenCV Function
             self.image = cv2.imread(path)
             self.process_frame()
+            dummy = self.waitkey(0)
+
         else:
             print('Wrong Mode....Please try again')
             # Raise Exception here and add logger data
-        pass
+
+        if needGridPlot == True:
+            self.grid_plot()
 
     # Internal Testing Function - 1
     def form_print(self, obj, string):
@@ -36,7 +51,6 @@ class LaneTracking:
         self.masked_image = self.process_image()
         self.line_image = self.process_lines()
         self.final_image()
-        self.grid_plot()
 
     def grid_plot(self):
         figure, subplots = plt.subplots(3,3, figsize=(9, 6), num='Lane Tracking')
@@ -122,9 +136,11 @@ class LaneTracking:
 
         # Displaying the final image
         cv2.imshow('Final Output', final_img)
-        self.key = cv2.waitKey(0)
-        if self.key == ord('q') or self.key('Q'):
+
+    def waitkey(self, timeInMilli):
+        key = cv2.waitKey(timeInMilli)
+        if key == ord('q') or key == ord('Q'):
             cv2.destroyWindow('Final Output')
+            return True
 
-
-obj = LaneTracking('Lane.jpeg', mode="Image")
+obj = LaneTracking('test2.mp4', mode="Video", needGridPlot=False)
