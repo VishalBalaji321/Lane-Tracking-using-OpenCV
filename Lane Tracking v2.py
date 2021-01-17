@@ -50,7 +50,7 @@ class LaneTracking:
         self.height = int(self.image.shape[0])
         self.width = int(self.image.shape[1])
         self.image = cv2.resize(self.image, (self.width, self.height))
-        self.roi_height = int(self.height * 0.8)
+        self.roi_height = int(self.height * 0.6)
         self.list_img = []
         self.masked_image = self.process_image()
         self.line_image = self.process_lines()
@@ -196,14 +196,15 @@ class LaneTracking:
 
         y1 = self.height
         y2 = int(self.height / 2)
-        x1 = int((y1 - intercept) / slope)
-        x2 = int((y2 - intercept) / slope)
 
         # This is to prevent the lines crossing past the ROI
-        # if y1 < self.roi_height:
-        #     y1 = self.roi_height
-        # if y2 < self.roi_height:
-        #     y2 = self.roi_height
+        if y1 < self.roi_height:
+            y1 = self.roi_height
+        if y2 < self.roi_height:
+            y2 = self.roi_height
+
+        x1 = int((y1 - intercept) / slope)
+        x2 = int((y2 - intercept) / slope)
 
         return np.array([x1, y1, x2, y2])
 
@@ -236,7 +237,7 @@ def videoplayback(path):
         ret, frame = cap.read()
         if ret:
             cv2.imshow('Hahaha', frame)
-            key = cv2.waitKey(20)
+            key = cv2.waitKey(100)
             if key == ord('q') or key == ord('Q'):
                 break
     cap.release()
@@ -245,9 +246,9 @@ def videoplayback(path):
 # obj = LaneTracking('Lane.jpeg', mode="Image", needGridPlot=True)
 
 # Video 1
-# obj = LaneTracking('test2.mp4', mode="Video", needGridPlot=False, debug=2)
+# obj = LaneTracking('test2.mp4', mode="Video", needGridPlot=False, debug=-1)
 # Video 2
-obj = LaneTracking('Test1.mp4', mode="Video", needGridPlot=False, debug=3)
+obj = LaneTracking('Test1.mp4', mode="Video", needGridPlot=False, debug=-1)
 # Video 3
 # obj = LaneTracking('Test3_Compressed.mp4', mode="Video", needGridPlot=False, debug=2)
 # videoplayback('Test3_Compressed.mp4')
